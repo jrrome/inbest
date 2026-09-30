@@ -7,13 +7,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+@Getter
 @Entity
 @Table(name = "assets")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Asset {
 
     // Persistent fields
@@ -22,12 +28,15 @@ public class Asset {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(name = "symbol", nullable = false, unique = true, length = 20)
     private String symbol;
 
+    @Setter
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
+    @Setter
     @Column(name = "price", nullable = false, precision = 20, scale = 8)
     private BigDecimal price;
 
@@ -35,10 +44,6 @@ public class Asset {
     private OffsetDateTime createdAt;
 
     // Constructors
-
-    protected Asset() {
-    }
-
     public Asset(String symbol, String name, BigDecimal price) {
         this.symbol = symbol;
         this.name = name;
@@ -46,43 +51,8 @@ public class Asset {
     }
 
     // Persistence lifecycle
-
     @PrePersist
     private void onCreate() {
         this.createdAt = OffsetDateTime.now(ZoneOffset.UTC);
-    }
-
-    // Accessors
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
     }
 }
