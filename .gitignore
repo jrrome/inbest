@@ -1,6 +1,9 @@
 backend/HELP.md
 backend/.gradle
 backend/build/
+blockchain/lib/
+blockchain/cache/
+blockchain/broadcast/
 !backend/gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
