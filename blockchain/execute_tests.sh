@@ -1,0 +1,1 @@
+docker compose exec -T anvil forge test --match-contract SimulatedTokenTest -vv

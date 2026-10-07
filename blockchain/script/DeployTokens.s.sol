@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
-// Contrato base de Foundry
+// Contrato base de Foundry para scripts
 import {Script} from "forge-std/Script.sol";
 // Herramienta para mostrar mensajes
 import {console2} from "forge-std/console2.sol";
