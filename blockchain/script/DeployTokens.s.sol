@@ -14,8 +14,13 @@ contract DeployTokens is Script {
         uint256 privateKey = vm.envUint("PRIVATE_KEY");
         address admin = vm.addr(privateKey);
 
+        // Indica a Forge que las siguientes operaciones las prepare como
+        // transacciones realizadas con la cuenta privateKey (firmadas)
+        // Para que estas transacciones se firmen y se envíen a anvil (no solo
+        // se simulen) hay que ejecutar el script con --broadcast
         vm.startBroadcast(privateKey);
 
+        // Creación de un token "Best Coin" con código BSTC
         SimulatedToken bestcoin = new SimulatedToken(
             "Best Coin",
             "BSTC",
