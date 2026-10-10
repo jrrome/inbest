@@ -1,4 +1,4 @@
-package gal.usc.etse.inbest.model;
+package gal.usc.etse.inbest.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;

@@ -1,4 +1,4 @@
-package gal.usc.etse.inbest.model;
+package gal.usc.etse.inbest.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,11 +11,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 
+@Getter
 @Entity
 @Table (name = "users")
 public class User {
@@ -59,27 +61,12 @@ public class User {
 
     //Accessors
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
 }
