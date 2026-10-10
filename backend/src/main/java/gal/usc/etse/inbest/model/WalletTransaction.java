@@ -1,6 +1,10 @@
 package gal.usc.etse.inbest.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,15 +25,21 @@ public class WalletTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Valid
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "type", nullable = false, columnDefinition = "wallet_transaction_type")
     private WalletTransactionType type;
 
+    @NotNull
+    @DecimalMin(value = "0", inclusive = false)
+    @Digits(integer = 12, fraction = 8)
     @Column(name = "amount", nullable = false, precision = 20, scale = 8)
     private BigDecimal amount;
 

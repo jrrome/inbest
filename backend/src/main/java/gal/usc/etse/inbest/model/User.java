@@ -7,6 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -22,10 +26,16 @@ public class User {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Size(max = 30)
     @Column(name = "username", nullable = false, unique = true, length = 30)
     private String username;
 
-    @Column(name = "email", length = 255)
+    @NotBlank
+    @Email
+    @Size(max = 255)
+    @Pattern(regexp = "^[^\\p{Lu}\\p{Lt}\\s]+$", message = "must be lowercase without whitespace")
+    @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;
 
     @Column(name = "created_at", nullable = false, updatable = false)

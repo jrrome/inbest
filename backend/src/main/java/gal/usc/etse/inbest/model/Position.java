@@ -10,8 +10,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 
 @Entity
 @Table(name = "positions", uniqueConstraints = {
@@ -25,19 +29,29 @@ public class Position {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Valid
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;
 
+    @NotNull
+    @Valid
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "asset_id", nullable = false)
     private Asset asset;
 
-    @Column(name = "available_quantity", nullable = false, precision = 20, scale = 8)
-    private BigDecimal availableQuantity = BigDecimal.ZERO;
+    @NotNull
+    @Min(0)
+    @Digits(integer = 78, fraction = 0)
+    @Column(name = "available_quantity", nullable = false, precision = 78, scale = 0)
+    private BigInteger availableQuantity = BigInteger.ZERO;
 
-    @Column(name = "reserved_quantity", nullable = false, precision = 20, scale = 8)
-    private BigDecimal reservedQuantity = BigDecimal.ZERO;
+    @NotNull
+    @Min(0)
+    @Digits(integer = 78, fraction = 0)
+    @Column(name = "reserved_quantity", nullable = false, precision = 78, scale = 0)
+    private BigInteger reservedQuantity = BigInteger.ZERO;
 
     // Constructors
 
@@ -71,19 +85,19 @@ public class Position {
         this.asset = asset;
     }
 
-    public BigDecimal getAvailableQuantity() {
+    public BigInteger getAvailableQuantity() {
         return availableQuantity;
     }
 
-    public void setAvailableQuantity(BigDecimal availableQuantity) {
+    public void setAvailableQuantity(BigInteger availableQuantity) {
         this.availableQuantity = availableQuantity;
     }
 
-    public BigDecimal getReservedQuantity() {
+    public BigInteger getReservedQuantity() {
         return reservedQuantity;
     }
 
-    public void setReservedQuantity(BigDecimal reservedQuantity) {
+    public void setReservedQuantity(BigInteger reservedQuantity) {
         this.reservedQuantity = reservedQuantity;
     }
 }
