@@ -1,6 +1,6 @@
 package gal.usc.etse.inbest.repository;
 
-import gal.usc.etse.inbest.model.User;
+import gal.usc.etse.inbest.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
