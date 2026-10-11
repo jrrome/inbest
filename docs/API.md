@@ -37,6 +37,21 @@ del propio usuario
 ### `GET /api/assets/{id}`
 Consultar la información de un asset
 
-### `GET /api/`
+De assets no creo que sean necesarios más 
+endpoints porque el resto de acciones se 
+pueden realizar dentro del backend.
+
+### `GET /api/users/{id}/wallets`
+Consultar las carteras que tiene un usuario
+
+Creo que la forma más lógica de acceder
+a las wallets es mediante el usuario
+que la posea.
+
+### `GET /api/users/{id}/wallets/{id}`
+Consultar una cartera específica de un usuario
+
+### `POST /api/users/{id}/wallets`
+Crear una wallet para un usuario
 
 ### `GET /api/`
