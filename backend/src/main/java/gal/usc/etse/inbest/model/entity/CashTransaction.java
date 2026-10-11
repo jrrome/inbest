@@ -16,10 +16,12 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 @Entity
-@Table(name = "wallet_transactions")
+@Table(name = "cash_transactions", uniqueConstraints = {
+        @UniqueConstraint(name = "uq_cash_transactions_trade", columnNames = {"cash_account_id", "trade_id", "type"})
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class WalletTransaction {
+public class CashTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,14 +30,19 @@ public class WalletTransaction {
     @NotNull
     @Valid
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "wallet_id", nullable = false)
-    private Wallet wallet;
+    @JoinColumn(name = "cash_account_id", nullable = false)
+    private CashAccount cashAccount;
+
+    @Valid
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trade_id")
+    private Trade trade;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "type", nullable = false, columnDefinition = "wallet_transaction_type")
-    private WalletTransactionType type;
+    @Column(name = "type", nullable = false, columnDefinition = "cash_transaction_type")
+    private CashTransactionType type;
 
     @NotNull
     @DecimalMin(value = "0", inclusive = false)
@@ -46,10 +53,11 @@ public class WalletTransaction {
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
-    public WalletTransaction(Wallet wallet, WalletTransactionType type, BigDecimal amount) {
-        this.wallet = wallet;
+    public CashTransaction(CashAccount cashAccount, CashTransactionType type, BigDecimal amount, Trade trade) {
+        this.cashAccount = cashAccount;
         this.type = type;
         this.amount = amount;
+        this.trade = trade;
     }
 
     @PrePersist

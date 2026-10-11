@@ -37,6 +37,12 @@ public class Order {
     @NotNull
     @Valid
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "wallet_id", nullable = false)
+    private Wallet wallet;
+
+    @NotNull
+    @Valid
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "asset_id", nullable = false)
     private Asset asset;
 
@@ -78,9 +84,10 @@ public class Order {
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
-    public Order(User user, Asset asset, OrderSide side,
+    public Order(User user, Wallet wallet, Asset asset, OrderSide side,
                  BigInteger quantity, BigDecimal price) {
         this.user = user;
+        this.wallet = wallet;
         this.asset = asset;
         this.side = side;
         this.quantity = quantity;

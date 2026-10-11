@@ -1,6 +1,6 @@
 package gal.usc.etse.inbest.model.entity;
 
-public enum WalletTransactionType {
+public enum CashTransactionType {
     DEPOSIT,
     WITHDRAWAL,
     BUY,
