@@ -14,13 +14,19 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigInteger;
 
 @Entity
+@Getter
 @Table(name = "positions", uniqueConstraints = {
         @UniqueConstraint(name = "uq_positions_wallet_asset", columnNames = {"wallet_id", "asset_id"})
 })
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Position {
 
     // Persistent fields
@@ -29,24 +35,28 @@ public class Position {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @NotNull
     @Valid
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;
 
+    @Setter
     @NotNull
     @Valid
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "asset_id", nullable = false)
     private Asset asset;
 
+    @Setter
     @NotNull
     @Min(0)
     @Digits(integer = 78, fraction = 0)
     @Column(name = "available_quantity", nullable = false, precision = 78, scale = 0)
     private BigInteger availableQuantity = BigInteger.ZERO;
 
+    @Setter
     @NotNull
     @Min(0)
     @Digits(integer = 78, fraction = 0)
@@ -55,49 +65,8 @@ public class Position {
 
     // Constructors
 
-    protected Position() {
-    }
-
     public Position(Wallet wallet, Asset asset) {
         this.wallet = wallet;
         this.asset = asset;
-    }
-
-    // Accessors
-
-    public Long getId() {
-        return id;
-    }
-
-    public Wallet getWallet() {
-        return wallet;
-    }
-
-    public void setWallet(Wallet wallet) {
-        this.wallet = wallet;
-    }
-
-    public Asset getAsset() {
-        return asset;
-    }
-
-    public void setAsset(Asset asset) {
-        this.asset = asset;
-    }
-
-    public BigInteger getAvailableQuantity() {
-        return availableQuantity;
-    }
-
-    public void setAvailableQuantity(BigInteger availableQuantity) {
-        this.availableQuantity = availableQuantity;
-    }
-
-    public BigInteger getReservedQuantity() {
-        return reservedQuantity;
-    }
-
-    public void setReservedQuantity(BigInteger reservedQuantity) {
-        this.reservedQuantity = reservedQuantity;
     }
 }
