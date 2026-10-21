@@ -1,5 +1,23 @@
 # Endpoints 
 
+## Autenticación
+
+El inicio de sesión utiliza un token de un solo uso enviado al buzón local de
+Mailpit. El flujo, las cookies y los tokens CSRF se describen en
+[AUTHENTICATION.md](AUTHENTICATION.md).
+
+- `GET /login`: solicitar el enlace de acceso.
+- `POST /ott/generate`: generar el token para un `username` existente.
+- `GET /login/ott`: formulario de confirmación del token.
+- `POST /login/ott`: consumir el `token` e iniciar sesión.
+- `GET /api/csrf`: obtener un token CSRF para el cliente.
+- `GET /api/me`: consultar los datos privados del usuario autenticado.
+- `POST /logout`: cerrar sesión.
+
+La consulta pública de usuarios permanece accesible sin sesión. Las demás rutas
+de la API requieren autenticación. Los endpoints enumerados a continuación
+incluyen tanto los implementados como las propuestas pendientes.
+
 ### `GET /api/users/{id}`
 Consultar la información pública de un usuario
 
