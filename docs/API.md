@@ -1,75 +1,43 @@
-# Endpoints 
+# Endpoints
 
-## Autenticación
+## Implementados
 
-El inicio de sesión utiliza un token de un solo uso enviado al buzón local de
-Mailpit. El flujo, las cookies y los tokens CSRF se describen en
-[AUTHENTICATION.md](AUTHENTICATION.md).
+| Método | Ruta | Acceso | Función |
+| --- | --- | --- | --- |
+| GET | `/api/csrf` | Público | Obtener CSRF y establecer la sesión del cliente. |
+| POST | `/api/users` | Público, con CSRF | Registrar usuario y crear su cuenta EUR con saldo cero. |
+| GET | `/api/users/{id}` | Público | Consultar únicamente el nombre público de usuario. |
+| GET | `/api/me` | Sesión | Consultar los datos privados del usuario autenticado. |
+| GET | `/login` | Público | Formulario de solicitud de enlace. |
+| POST | `/ott/generate` | Público, con CSRF | Solicitar un enlace para `username` mediante formulario. |
+| GET | `/ott/sent` | Público | Confirmación genérica de la solicitud. |
+| GET | `/login/ott` | Público | Formulario de confirmación del token. |
+| POST | `/login/ott` | Público, con CSRF | Consumir `token` e iniciar sesión. |
+| POST | `/logout` | Con CSRF | Invalidar la sesión. |
 
-- `GET /login`: solicitar el enlace de acceso.
-- `POST /ott/generate`: generar el token para un `username` existente.
-- `GET /login/ott`: formulario de confirmación del token.
-- `POST /login/ott`: consumir el `token` e iniciar sesión.
-- `GET /api/csrf`: obtener un token CSRF para el cliente.
-- `GET /api/me`: consultar los datos privados del usuario autenticado.
-- `POST /logout`: cerrar sesión.
+El alta acepta JSON con `username` y `email`. Devuelve `201 Created`, la cabecera
+`Location: /api/users/{id}` y el DTO privado del usuario. Devuelve `400` por datos
+inválidos y `409` por nombre o correo duplicados, en formato Problem Detail.
 
-La consulta pública de usuarios permanece accesible sin sesión. Las demás rutas
-de la API requieren autenticación. Los endpoints enumerados a continuación
-incluyen tanto los implementados como las propuestas pendientes.
+La consulta pública devuelve `404` si no existe el ID. `/api/me` devuelve `id`,
+`username`, `email` y `createdAt`, o `401` sin sesión. Las demás rutas privadas
+de la API también requieren sesión. Las peticiones que modifican datos sin un
+CSRF válido devuelven `403`, aunque la ruta permita usuarios anónimos.
 
-### `GET /api/users/{id}`
-Consultar la información pública de un usuario
+El flujo de acceso, la configuración local, los límites de envío y ejemplos
+de cliente se describen en [AUTHENTICATION.md](AUTHENTICATION.md).
 
-### `GET /api/users/{id}`
-Consultar la información pública de un usuario
+## Propuestas pendientes
 
-Por el momento solo se devuelve el nombre de 
-usuario como información pública, pero otros
-detalles como direcciones de sus wallets,
-patrimonio estimado, etc. (información que
-hay que extraer de otras tablas) también
-se podrían añadir.
+Estas rutas todavía no tienen controlador ni lógica de negocio:
 
-### `GET /api/users/{id}/orders`
-Ver las órdenes de un usuario.
+- `PATCH /api/users`: actualizar los datos propios; el contrato está por definir.
+- `GET /api/users/{id}/orders`: consultar órdenes. Pendiente decidir su visibilidad;
+  las consultas privadas deberán comprobar que pertenecen al usuario de la sesión.
+- `GET /api/assets/{id}`: consultar un activo.
+- `GET /api/users/{id}/wallets`: consultar las carteras del usuario.
+- `GET /api/users/{id}/wallets/{walletId}`: consultar una cartera concreta.
+- `POST /api/users/{id}/wallets`: crear una cartera, verificando su propietario.
 
-Con esto surge una duda: si solo cada usuario
-puede ver sus propias órdenes (habría que
-implementar RLS o algo así) o si existe opción
-de que un usuario tenga sus órdenes en
-público/privado (habría que añadir lógica
-adicional para permitirlo).
-
-### `POST /api/users`
-Crear un nuevo usuario
-
-### `PATCH /api/users`
-Cambiar información de un nuevo usuario
-
-### `GET /api/me`
-Esta es una elección común de endpoint 
-para consultar la información privada
-del propio usuario
-
-### `GET /api/assets/{id}`
-Consultar la información de un asset
-
-De assets no creo que sean necesarios más 
-endpoints porque el resto de acciones se 
-pueden realizar dentro del backend.
-
-### `GET /api/users/{id}/wallets`
-Consultar las carteras que tiene un usuario
-
-Creo que la forma más lógica de acceder
-a las wallets es mediante el usuario
-que la posea.
-
-### `GET /api/users/{id}/wallets/{id}`
-Consultar una cartera específica de un usuario
-
-### `POST /api/users/{id}/wallets`
-Crear una wallet para un usuario
-
-### `GET /api/`
+También quedan por definir la creación de órdenes, las reservas de efectivo o
+tokens y su ejecución y liquidación.
