@@ -3,8 +3,7 @@
 ## Autenticación
 
 El inicio de sesión utiliza un token de un solo uso enviado al buzón local de
-Mailpit. El flujo, las cookies y los tokens CSRF se describen en
-[AUTHENTICATION.md](AUTHENTICATION.md).
+Mailpit. 
 
 - `GET /login`: solicitar el enlace de acceso.
 - `POST /ott/generate`: generar el token para un `username` existente.
