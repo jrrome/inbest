@@ -9,13 +9,12 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 public interface TokenRepository extends JpaRepository<Token, Long> {
-    Optional<Token> getById(long id);
-    Optional<Token> getByName(String name);
-    Optional<Token> getBySymbol(String symbol);
+    Optional<Token> findByName(String name);
+    Optional<Token> findBySymbol(String symbol);
 
-    Page<Token> getAllByChainId(Long chainId, Pageable pageable);
+    Page<Token> findAllByChainId(Long chainId, Pageable pageable);
 
-    Page<Token> getAllByCreatedAtBetween(
+    Page<Token> findAllByCreatedAtBetween(
             OffsetDateTime createdAtAfter,
             OffsetDateTime createdAtBefore,
             Pageable pageable);
