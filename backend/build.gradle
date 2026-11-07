@@ -18,6 +18,10 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    web3jCodegen
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-flyway'
@@ -26,6 +30,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.flywaydb:flyway-database-postgresql'
+    implementation 'org.web3j:core:6.1.0'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     runtimeOnly 'org.postgresql:postgresql'
@@ -40,8 +45,37 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    web3jCodegen 'org.web3j:codegen:6.1.0'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// Generación del wrapper java del token a partir de la salida de forge build
+def foundryArtifact = file('../blockchain/out/SimulatedToken.sol/SimulatedToken.json')
+def abiDir = layout.buildDirectory.dir('contract-abi')
+
+// Esta tarea extrae el abi del contrato
+tasks.register('extractContractAbi') {
+    inputs.file foundryArtifact
+    outputs.dir abiDir
+    doLast {
+        def json = new groovy.json.JsonSlurper().parse(foundryArtifact)
+        def dir = abiDir.get().asFile
+        new File(dir, 'SimulatedToken.abi').text = groovy.json.JsonOutput.toJson(json.abi)
+        new File(dir, 'SimulatedToken.bin').text = json.bytecode.object
+    }
+}
+
+tasks.register('generateContractWrappers', JavaExec) {
+    group = 'blockchain'
+    description = 'Genera SimulatedToken.java desde blockchain/out (ejecutar forge build antes)'
+    dependsOn 'extractContractAbi'
+    classpath = configurations.web3jCodegen
+    mainClass = 'org.web3j.codegen.SolidityFunctionWrapperGenerator'
+    args '--abiFile', abiDir.get().file('SimulatedToken.abi').asFile.path,
+            '--binFile', abiDir.get().file('SimulatedToken.bin').asFile.path,
+            '--outputDir', file('src/main/java').path,
+            '--package', 'gal.usc.etse.inbest.blockchain.contract'
 }
