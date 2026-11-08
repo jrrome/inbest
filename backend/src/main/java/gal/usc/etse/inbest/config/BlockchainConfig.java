@@ -28,8 +28,9 @@ public class BlockchainConfig {
         return Credentials.create(adminPrivateKey);
     }
 
+    // no puede llamarse transactionManager: ese nombre ya lo usa jpa para las transacciones de la bd
     @Bean
-    TransactionManager transactionManager(
+    TransactionManager web3jTransactionManager(
             Web3j web3j,
             Credentials adminCredentials,
             @Value("${inbest.blockchain.chain-id}") long chainId)
