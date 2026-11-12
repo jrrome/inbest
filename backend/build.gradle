@@ -29,6 +29,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.flywaydb:flyway-database-postgresql'
     implementation 'org.web3j:core:6.1.0'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
