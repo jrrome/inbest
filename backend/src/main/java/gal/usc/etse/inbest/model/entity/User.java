@@ -40,6 +40,19 @@ public class User {
     @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;
 
+    @Size(max = 255)
+    @Column(name = "first_name", length = 255)
+    private String firstName;
+
+    @Size(max = 255)
+    @Column(name = "last_name", length = 255)
+    private String lastName;
+
+    @NotBlank
+    @Size(max = 255)
+    @Column(name = "authentication_id", nullable = false, unique = true, updatable = false, length = 255)
+    private String authenticationId;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
@@ -47,7 +60,8 @@ public class User {
 
     protected User() {}
 
-    public User(String username, String email) {
+    public User(String authenticationId, String username, String email) {
+        this.authenticationId = authenticationId;
         this.username = username;
         this.email = email;
     }
@@ -67,6 +81,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
 }

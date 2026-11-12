@@ -14,4 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
+
+    // authenticationId es el claim sub del token de keycloak
+    Optional<User> findByAuthenticationId(String authenticationId);
 }
