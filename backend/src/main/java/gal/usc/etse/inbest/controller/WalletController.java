@@ -5,11 +5,12 @@ import gal.usc.etse.inbest.service.UserService;
 import gal.usc.etse.inbest.service.WalletService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.List;
 
@@ -26,15 +27,11 @@ public class WalletController{
     }
 
     @GetMapping("/{id}/wallets")
-    public ResponseEntity<List<Wallet>> findWallets(@PathVariable("id") Long userId, Authentication authentication) {
+    public ResponseEntity<List<Wallet>> findWallets(@PathVariable("id") Long userId, @AuthenticationPrincipal Jwt jwt) {
 
-        var currentUser = userService.findByUsername(authentication.getName());
+        var currentUser = userService.getOrCreate(jwt);
 
-        if (currentUser.isEmpty()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        if (!currentUser.get().getId().equals(userId)){
+        if(!currentUser.getId().equals(userId)){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
