@@ -12,7 +12,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     // De momento usamos pageable, pero en este caso podría ser útil el uso de cursores
     Page<Event> findAllByActorUser(User actorUser, Pageable pageable);
 
-    Page<Event> findAllByOccurredAtBetween(
+    Page<Event> findAllByOccurredAtBetweenOrderByIdAsc(
             OffsetDateTime occurredAtAfter,
             OffsetDateTime occurredAtBefore,
             Pageable pageable);
