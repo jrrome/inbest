@@ -1,14 +1,17 @@
 package gal.usc.etse.inbest.model.dto;
 
+import gal.usc.etse.inbest.model.entity.EntityType;
+import gal.usc.etse.inbest.model.entity.EventType;
+
 import java.time.OffsetDateTime;
 import java.util.Map;
 
 public record Event(
         Long id,
         OffsetDateTime occurredAt,
-        String eventType,
+        EventType eventType,
         Long actorUserId,
-        String entityType,
+        EntityType entityType,
         Long entityId,
         String txHash,
         Long chainId,

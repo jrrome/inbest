@@ -2,10 +2,8 @@ package gal.usc.etse.inbest.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,20 +29,20 @@ public class Event {
     @Column(name = "occurred_at", nullable = false, updatable = false)
     private OffsetDateTime occurredAt;
 
-    @NotBlank
-    @Size(max = 64)
+    @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "event_type", nullable = false, updatable = false, length = 64)
-    private String eventType;
+    private EventType eventType;
 
     // null cuando el hecho lo origina el sistema
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actor_user_id", updatable = false)
     private User actorUser;
 
-    @NotBlank
-    @Size(max = 64)
+    @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "entity_type", nullable = false, updatable = false, length = 64)
-    private String entityType;
+    private EntityType entityType;
 
     @Column(name = "entity_id", updatable = false)
     private Long entityId;
@@ -64,7 +62,7 @@ public class Event {
 
     // con tantos campos opcionales del mismo tipo, el builder evita confundir entityId y chainId
     @Builder
-    public Event(String eventType, User actorUser, String entityType, Long entityId,
+    public Event(EventType eventType, User actorUser, EntityType entityType, Long entityId,
                  String txHash, Long chainId, Map<String, Object> details) {
         this.eventType = eventType;
         this.actorUser = actorUser;
