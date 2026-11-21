@@ -1,5 +1,6 @@
 package gal.usc.etse.inbest.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +29,7 @@ import java.time.ZoneOffset;
         @UniqueConstraint(name = "uq_tokens_chain_address", columnNames = {"chain_id", "contract_address"})
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Token {
 
     @Id
