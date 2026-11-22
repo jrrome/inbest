@@ -36,7 +36,8 @@ public class TokenController {
     public ResponseEntity<Token> deployToken(@Valid @RequestBody CreateTokenRequest request,
                                              @AuthenticationPrincipal Jwt jwt) {
         User user = userService.getOrCreate(jwt);
-        Token dto = Token.from(tokenService.deployToken(user, request.name(), request.symbol(), request.description()));
+        Token dto = Token.from(tokenService.deployToken(user, request.name(), request.symbol(), request.description(),
+                request.initialSupply()));
         // Obtener la localización
         var location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(dto.id()).toUri();

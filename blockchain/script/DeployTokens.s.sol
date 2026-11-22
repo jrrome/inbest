@@ -21,16 +21,21 @@ contract DeployTokens is Script {
         vm.startBroadcast(privateKey);
 
         // Creación de un token "Best Coin" con código BSTC
+        // emisión inicial de 10.000 tokens (18 decimales) para el admin
         SimulatedToken bestcoin = new SimulatedToken(
             "Best Coin",
             "BSTC",
-            admin
+            admin,
+            admin,
+            10_000 * 10 ** 18
         );
 
         SimulatedToken euro = new SimulatedToken(
             "Simulated Euro",
             "SEUR",
-            admin
+            admin,
+            admin,
+            0
         );
 
         // Finaliza el tramo de recopilación de transacciones

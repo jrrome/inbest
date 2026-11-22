@@ -36,12 +36,21 @@ contract SimulatedToken is ERC20, Ownable {
         // Símbolo del token (ETSEC)
         string memory tokenSymbol,
         // Cuenta del admin inicial
-        address initialOwner
+        address initialOwner,
+        // Cuenta que recibe la emisión inicial
+        address initialHolder,
+        // Emisión inicial en unidades mínimas, puede ser 0
+        uint256 initialSupply
     )
         // Llamadas a los constructores de los contratos heredados
         ERC20(tokenName, tokenSymbol)
         Ownable(initialOwner)
-    {}
+    {
+        // El despliegue y la emisión inicial van en la misma transacción:
+        if (initialSupply > 0) {
+            _mint(initialHolder, initialSupply);
+        }
+    }
 
     /// Función para emitir tokens
     // mint, en el contexto de tokens, significa emitir o crear unidades

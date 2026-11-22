@@ -7,6 +7,8 @@ import gal.usc.etse.inbest.model.entity.Token;
 import gal.usc.etse.inbest.model.entity.User;
 import gal.usc.etse.inbest.repository.TokenRepository;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -22,12 +24,16 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.ContractGasProvider;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Locale;
 
 @Service
 @Validated
 @Slf4j
 public class TokenService {
+    private static final int TOKEN_DECIMALS = 18;
+
     private final TokenRepository tokenRepository;
     private final Web3j web3j;
     private final TransactionManager txManager;
@@ -65,20 +71,26 @@ public class TokenService {
             User user,
             @NotBlank @Size(max = 100) String name,
             @NotBlank @Size(max = 20) String symbol,
-            String description)
+            String description,
+            @NotNull @Positive BigDecimal initialSupply)
     {
         log.info("User {} is deploying token {} ({})", user.getId(), name, symbol);
+        // La emisión llega en tokens y el contrato la recibe en unidades mínimas
+        BigInteger initialSupplyUnits = initialSupply.movePointRight(TOKEN_DECIMALS).toBigIntegerExact();
         SimulatedToken simulatedToken;
         short decimals;
         String txHash;
         try {
+            // La emisión inicial va a la wallet del sistema, que usa la cuenta admin
             simulatedToken = SimulatedToken.deploy(
                     web3j,
                     txManager,
                     contractGasProvider,
                     name,
                     symbol,
-                    adminCredentials.getAddress()
+                    adminCredentials.getAddress(),
+                    adminCredentials.getAddress(),
+                    initialSupplyUnits
             ).send();
         } catch (Exception e) {
             log.error("Error deploying the token {} ({})", name, symbol);

@@ -30,7 +30,28 @@ contract SimulatedTokenTest is Test {
         jaime = makeAddr("jaime");
         miguel = makeAddr("miguel");
 
-        token = new SimulatedToken("Best Coin", "BSTC", admin);
+        token = new SimulatedToken("Best Coin", "BSTC", admin, admin, 0);
+    }
+
+    function test_ConstructorMintsInitialSupply() public {
+        address treasury = makeAddr("treasury");
+        SimulatedToken issued = new SimulatedToken("Best Coin", "BSTC", admin, treasury, 10_000 * UNIT);
+
+        assertEq(issued.balanceOf(treasury), 10_000 * UNIT);
+        assertEq(issued.totalSupply(), 10_000 * UNIT);
+        assertEq(issued.balanceOf(admin), 0);
+        assertEq(issued.owner(), admin);
+    }
+
+    function test_ConstructorRevertsIfInitialHolderIsZero() public {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IERC20Errors.ERC20InvalidReceiver.selector,
+                address(0)
+            )
+        );
+
+        new SimulatedToken("Best Coin", "BSTC", admin, address(0), 10_000 * UNIT);
     }
 
     function test_MintIncreasesBalanceAndSupply() public {
