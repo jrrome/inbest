@@ -54,11 +54,35 @@ public class Wallet {
     @Column(name = "address", nullable = false, length = 42)
     private String address;
 
+    // Cifrado en sobre: la clave privada va cifrada con su DEK y la DEK con la clave maestra de versión
+    // kekVersion. Los tres son null en la wallet del sistema. Nunca deben salir en un DTO ni en un log
+    @Column(name = "encrypted_private_key", updatable = false)
+    private String encryptedPrivateKey;
+
+    // Con setter para poder recifrarla al rotar la clave maestra
+    @Setter
+    @Column(name = "encrypted_dek")
+    private String encryptedDek;
+
+    @Setter
+    @Min(1)
+    @Column(name = "kek_version")
+    private Short kekVersion;
+
     // Constructors
 
+    // Wallet sin clave propia, como la del sistema
     public Wallet(User user, Long chainId, String address) {
         this.user = user;
         this.chainId = chainId;
         this.address = address;
+    }
+
+    public Wallet(User user, Long chainId, String address, String encryptedPrivateKey, String encryptedDek,
+                  Short kekVersion) {
+        this(user, chainId, address);
+        this.encryptedPrivateKey = encryptedPrivateKey;
+        this.encryptedDek = encryptedDek;
+        this.kekVersion = kekVersion;
     }
 }
