@@ -26,7 +26,8 @@ import java.time.ZoneOffset;
 @Getter
 @Entity
 @Table(name = "tokens", uniqueConstraints = {
-        @UniqueConstraint(name = "uq_tokens_chain_address", columnNames = {"chain_id", "contract_address"})
+        @UniqueConstraint(name = "uq_tokens_chain_address", columnNames = {"chain_id", "contract_address"}),
+        @UniqueConstraint(name = "uq_tokens_chain_symbol", columnNames = {"chain_id", "symbol"})
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonInclude(JsonInclude.Include.NON_NULL)

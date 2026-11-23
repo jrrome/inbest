@@ -7,24 +7,26 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+// El nombre y el símbolo se leen del token asociado
 @Getter
 @Entity
 @Table(name = "assets")
@@ -37,25 +39,13 @@ public class Asset {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     @NotNull
     @Valid
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "token_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "token_id", nullable = false, unique = true, updatable = false)
     private Token token;
 
-    @Setter
-    @NotBlank
-    @Size(max = 20)
-    @Column(name = "symbol", nullable = false, unique = true, length = 20)
-    private String symbol;
-
-    @Setter
-    @NotBlank
-    @Size(max = 100)
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
-
+    // Precio de referencia alrededor del cual la plataforma coloca sus órdenes
     @Setter
     @NotNull
     @DecimalMin(value = "0", inclusive = false)
@@ -63,15 +53,51 @@ public class Asset {
     @Column(name = "price", nullable = false, precision = 20, scale = 8)
     private BigDecimal price;
 
+    // En unidades mínimas del token
+    @NotNull
+    @Min(1)
+    @Digits(integer = 78, fraction = 0)
+    @Column(name = "initial_supply", nullable = false, updatable = false, precision = 78, scale = 0)
+    private BigInteger initialSupply;
+
+    // Diferencia total entre el precio de venta y el de compra de la plataforma, como fracción del precio
+    @Setter
+    @NotNull
+    @DecimalMin(value = "0", inclusive = false)
+    @DecimalMax(value = "1", inclusive = false)
+    @Digits(integer = 2, fraction = 4)
+    @Column(name = "spread", nullable = false, precision = 6, scale = 4)
+    private BigDecimal spread;
+
+    // Cuánto se mueve el precio de referencia por cada fracción de la emisión que compra o vende la plataforma
+    @Setter
+    @NotNull
+    @DecimalMin(value = "0")
+    @Digits(integer = 2, fraction = 4)
+    @Column(name = "price_impact", nullable = false, precision = 6, scale = 4)
+    private BigDecimal priceImpact;
+
+    // Cantidad máxima de cada orden de la plataforma, en unidades mínimas del token
+    @Setter
+    @NotNull
+    @Min(1)
+    @Digits(integer = 78, fraction = 0)
+    @Column(name = "max_quote_size", nullable = false, precision = 78, scale = 0)
+    private BigInteger maxQuoteSize;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
     // Constructors
-    public Asset(String symbol, String name, BigDecimal price, Token token) {
-        this.symbol = symbol;
-        this.name = name;
-        this.price = price;
+
+    public Asset(Token token, BigDecimal price, BigInteger initialSupply, BigDecimal spread,
+                 BigDecimal priceImpact, BigInteger maxQuoteSize) {
         this.token = token;
+        this.price = price;
+        this.initialSupply = initialSupply;
+        this.spread = spread;
+        this.priceImpact = priceImpact;
+        this.maxQuoteSize = maxQuoteSize;
     }
 
     // Persistence lifecycle

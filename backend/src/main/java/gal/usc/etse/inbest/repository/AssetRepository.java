@@ -14,7 +14,7 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
     // no admite Optional como resultado de una consulta con Pageable.
     // Optional<Asset> findById(Long id, Pageable pageable);
 
-    Page<Asset> findByName(String name, Pageable pageable);
+    Page<Asset> findByToken_Name(String name, Pageable pageable);
 
     Page<Asset> findAllByCreatedAtBetween(
             OffsetDateTime createdAtAfter,
