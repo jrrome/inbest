@@ -1,6 +1,7 @@
 package gal.usc.etse.inbest.model.dto;
 
 import gal.usc.etse.inbest.model.entity.OrderSide;
+import gal.usc.etse.inbest.model.entity.OrderStatus;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -15,7 +16,7 @@ public record Order(
     BigInteger quantity,
     BigInteger filledQuantity,
     BigDecimal price,
-    String status,
+    OrderStatus status,
     OffsetDateTime createdAt
 ) {
 

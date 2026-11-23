@@ -5,9 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -76,10 +74,18 @@ public class Order {
     private BigDecimal price;
 
     @Setter
-    @NotBlank
-    @Size(max = 20)
+    @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
-    private String status = "PENDING";
+    private OrderStatus status = OrderStatus.PENDING;
+
+    // Efectivo que sigue reservado para esta orden; en las ventas siempre es 0
+    @Setter
+    @NotNull
+    @DecimalMin(value = "0")
+    @Digits(integer = 12, fraction = 8)
+    @Column(name = "reserved_cash", nullable = false, precision = 20, scale = 8)
+    private BigDecimal reservedCash = BigDecimal.ZERO;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
