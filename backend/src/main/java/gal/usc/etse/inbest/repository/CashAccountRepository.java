@@ -2,10 +2,15 @@ package gal.usc.etse.inbest.repository;
 
 import gal.usc.etse.inbest.model.entity.CashAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 
 import java.util.Optional;
 
 public interface CashAccountRepository extends JpaRepository<CashAccount, Long> {
 
     Optional<CashAccount> findByUser_Id(Long userId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<CashAccount> findWithLockByUser_Id(Long userId);
 }
