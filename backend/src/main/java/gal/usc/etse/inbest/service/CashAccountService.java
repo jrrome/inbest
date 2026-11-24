@@ -6,6 +6,8 @@ import gal.usc.etse.inbest.model.entity.CashTransactionType;
 import gal.usc.etse.inbest.model.entity.User;
 import gal.usc.etse.inbest.repository.CashAccountRepository;
 import gal.usc.etse.inbest.repository.CashTransactionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +45,11 @@ public class CashAccountService {
         //Un DEPOSIT nunca tiene trade asociado
         CashTransaction transaction = new CashTransaction(account, CashTransactionType.DEPOSIT, amount, null);
         return cashTransactionRepository.save(transaction);
+    }
+
+    //Movimientos de la cuenta del usuario, paginados
+    public Page<CashTransaction> findTransactions(Long userId, Pageable pageable) {
+        return cashTransactionRepository.findByCashAccount_User_Id(userId, pageable);
     }
 
 
