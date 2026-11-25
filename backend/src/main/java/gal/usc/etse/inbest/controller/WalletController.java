@@ -1,22 +1,27 @@
 package gal.usc.etse.inbest.controller;
 
+import gal.usc.etse.inbest.model.dto.CreateWalletRequest;
 import gal.usc.etse.inbest.model.dto.Wallet;
+import gal.usc.etse.inbest.model.entity.User;
 import gal.usc.etse.inbest.service.UserService;
 import gal.usc.etse.inbest.service.WalletService;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.List;
-
+// Cada usuario tiene como mucho una wallet
 @RestController
-@RequestMapping("/api/users")
-public class WalletController{
+@RequestMapping("/api")
+public class WalletController {
 
     private final UserService userService;
     private final WalletService walletService;
@@ -26,21 +31,27 @@ public class WalletController{
         this.walletService = walletService;
     }
 
-    @GetMapping("/{id}/wallets")
-    public ResponseEntity<List<Wallet>> findWallets(@PathVariable("id") Long userId, @AuthenticationPrincipal Jwt jwt) {
+    @GetMapping("/users/{id}/wallet")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Wallet> findWallet(@PathVariable("id") Long userId) {
+        return ResponseEntity.of(walletService.findByUserId(userId).map(Wallet::from));
+    }
 
-        var currentUser = userService.getOrCreate(jwt);
+    @GetMapping("/me/wallet")
+    public ResponseEntity<Wallet> findWallet(@AuthenticationPrincipal Jwt jwt) {
+        User currentUser = userService.getOrCreate(jwt);
+        return ResponseEntity.of(walletService.findByUserId(currentUser.getId()).map(Wallet::from));
+    }
 
-        if(!currentUser.getId().equals(userId)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        List <Wallet> wallets = walletService.findByUserId(userId).stream().map(Wallet::from).toList();
-
-        return ResponseEntity.ok(wallets);
+    // El cuerpo es opcional: solo lleva el nombre de la wallet
+    @PostMapping("/me/wallet")
+    public ResponseEntity<Wallet> createWallet(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody(required = false) CreateWalletRequest request) {
+        User currentUser = userService.getOrCreate(jwt);
+        String name = request == null ? null : request.name();
+        Wallet dto = Wallet.from(walletService.createWallet(currentUser, name));
+        var location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+        return ResponseEntity.created(location).body(dto);
     }
 }
-
-
-
-

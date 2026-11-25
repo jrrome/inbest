@@ -44,4 +44,13 @@ public class EventService {
         logBlockchainEvent(EventType.TOKEN_DEPLOY, actorUser, EntityType.TOKEN, token.getId(), txHash,
                 token.getChainId(), details);
     }
+
+    public void logWalletCreateEvent(User actorUser, Wallet wallet) {
+        Map<String, Object> details = new LinkedHashMap<>();
+        details.put("address", wallet.getAddress());
+        details.put("name", wallet.getName());
+        details.put("kekVersion", wallet.getKekVersion());
+        logBlockchainEvent(EventType.WALLET_CREATE, actorUser, EntityType.WALLET, wallet.getId(), null,
+                wallet.getChainId(), details);
+    }
 }

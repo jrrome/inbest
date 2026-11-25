@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.Valid;
@@ -15,16 +16,21 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 @Entity
 @Getter
 @Table(name = "wallets", uniqueConstraints = {
         @UniqueConstraint(name = "uq_wallets_chain_address", columnNames = {"chain_id", "address"}),
-        @UniqueConstraint(name = "uq_wallets_id_user", columnNames = {"id", "user_id"})
+        @UniqueConstraint(name = "uq_wallets_id_user", columnNames = {"id", "user_id"}),
+        @UniqueConstraint(name = "uq_wallets_user", columnNames = {"user_id"})
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Wallet {
@@ -53,6 +59,14 @@ public class Wallet {
     @Pattern(regexp = "^0x[0-9a-f]{40}$")
     @Column(name = "address", nullable = false, length = 42)
     private String address;
+
+    @Setter
+    @Size(max = 100)
+    @Column(name = "name", length = 100)
+    private String name;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private OffsetDateTime createdAt;
 
     // Cifrado en sobre: la clave privada va cifrada con su DEK y la DEK con la clave maestra de versión
     // kekVersion. Los tres son null en la wallet del sistema. Nunca deben salir en un DTO ni en un log
@@ -84,5 +98,12 @@ public class Wallet {
         this.encryptedPrivateKey = encryptedPrivateKey;
         this.encryptedDek = encryptedDek;
         this.kekVersion = kekVersion;
+    }
+
+    // Persistence lifecycle
+
+    @PrePersist
+    private void onCreate() {
+        this.createdAt = OffsetDateTime.now(ZoneOffset.UTC);
     }
 }
