@@ -74,6 +74,7 @@ public class TokenService {
             String description,
             @NotNull @Positive BigDecimal initialSupply)
     {
+        // TODO: evento preparación creación de token
         log.info("User {} is deploying token {} ({})", user.getId(), name, symbol);
         // La emisión llega en tokens y el contrato la recibe en unidades mínimas
         BigInteger initialSupplyUnits = initialSupply.movePointRight(TOKEN_DECIMALS).toBigIntegerExact();
@@ -107,6 +108,7 @@ public class TokenService {
             log.error("Error getting token {} details", symbol);
             throw new BlockchainException("Error getting token " + symbol + " details", e);
         }
+        // TODO: evento token creado en la blockchain
         log.info("Token {} ({}) successfully deployed in blockchain", name, symbol);
 
         String address = simulatedToken.getContractAddress().toLowerCase(Locale.ROOT);
@@ -115,18 +117,16 @@ public class TokenService {
         createdToken.setDescription(description);
 
         log.info("Saving token {} ({}) to the database", name, symbol);
-        // TODO: otra opción puede ser devolver el token aunque no se haya guardado en la DB, de momento queda
-        // así por simplicidad
         try {
             // Transacción que envuelve el guardado del token creado y el evento
             return transactionTemplate.execute(status -> {
                 Token savedToken = tokenRepository.save(createdToken);
-                // TODO: tal vez la función logTokenDeployEvent no debería recibir details y construirlos a partir de Token
                 eventService.logTokenDeployEvent(user, savedToken, txHash);
                 return savedToken;
             });
         } catch (Exception e) {
-            // TODO: el objetivo es que el sistema se recupere solo de la inconsistencia
+            // TODO: evento error creando token
+            // TODO: el objetivo es que el sistema se recupere solo de la inconsistencia, añadir a cola?
             log.error("Error saving the token {} ({}) to the database, leaving inconsistent state between blockchain " +
                     "and database", name, symbol);
             throw new BlockchainPersistenceInconsistencyException("Error saving the token " + symbol +
